@@ -31,3 +31,8 @@ models/*.joblib
 # OS
 .DS_Store
 Thumbs.db
+app/review/dataset/kr3_raw.tsv
+app/review/dataset/cafe_overall_sentiment.csv
+app/review/dataset/cafe_reviews_clean_with_check_type.csv
+app/review/dataset/cafe_reviews_clean.csv
+app/review/dataset/cafe_reviews_for_qwen_labeling.csv
