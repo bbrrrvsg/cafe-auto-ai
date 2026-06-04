@@ -1,0 +1,33 @@
+# venv
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 학습된 모델 (로컬 산출물)
+models/*.pkl
+models/*.joblib
+
+# 환경설정
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# 테스트/캐시
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS
+.DS_Store
+Thumbs.db
