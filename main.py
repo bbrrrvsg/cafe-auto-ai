@@ -17,3 +17,7 @@ app.include_router(inventory_router, prefix="/inventory", tags=["inventory"])
 app.include_router(order_router, prefix="/order", tags=["order"])
 app.include_router(review_router, prefix="/review", tags=["review"])
 app.include_router(anomaly_router, prefix="/anomaly", tags=["anomaly"])
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
