@@ -69,18 +69,22 @@ def calculate_order_prediction(ingredient_id: int, day_of_week: str, current_sto
         weight = 1.25 if day_of_week in ["SATURDAY", "SUNDAY"] else 1.0
         final_predicted_consume = int(np.ceil(predicted_consume * weight))
         
-        # [최종 AI 발주량 연산 공식 적용]
-        # 추천 발주량 = (파이토치 예측 소모량 + 자바가 준 실제 안전재고) - 현재 매장 실재고
-        suggested_qty = (final_predicted_consume + safety_stock) - current_stock
+        # 🌟 [단위 버그 완전 격리] 자재 ID가 1번(원두), 4번(우유)일 때만 환산 계수를 1000으로 고정
+        unit_factor = 1000 if ingredient_id in [1, 4] else 1
         
-        # 계산 수치가 음수(-)가 나오면 발주할 필요가 없으므로 0 고정
+        # 원본 소모량(g, ml)을 자바 화면 규격(봉, 팩, 개) 단위로 올림 가공
+        display_predicted_consume = int(np.ceil(final_predicted_consume / unit_factor))
+        
+        # 추천 발주량(개) = 예측 소모량(개) + 안전재고(개) - 현재고(개)
+        suggested_qty = (display_predicted_consume + safety_stock) - current_stock
+        
         if suggested_qty < 0:
             suggested_qty = 0
             
         return PredictionResponse(
             status="AI_PREDICT",
-            suggestedQty=suggested_qty,
-            message=f"[PyTorch 딥러닝] 다음 주기 예측 소모({final_predicted_consume}개) + 안전재고 반영 완료.",
+            suggestedQty=suggested_qty, # 이제 팩/개 단위 수치가 자바로 바로 넘어감!
+            message=f"[PyTorch 딥러닝] 다음 주기 예측 소모({display_predicted_consume}개) 반영 완료.",
             code="AUTO_ANALYSIS"
         )
         
