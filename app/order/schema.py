@@ -7,3 +7,9 @@ class PredictionRequest(BaseModel):
     currentStock: int    
     safetyStock: int     
     rawAmounts: List[int]
+
+class PredictionResponse(BaseModel):
+    status: str
+    suggestedQty: int
+    message: str
+    code: str
