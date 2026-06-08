@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from app.order.schema import PredictionRequest, PredictionResponse
 from app.order.model import calculate_order_prediction
-router = APIRouter()
 
+router = APIRouter()
 
 @router.post("/predict", response_model=PredictionResponse)
 def predict_order_quantity(payload: PredictionRequest):
