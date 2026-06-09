@@ -69,7 +69,7 @@ def calculate_order_prediction(ingredient_id: int, day_of_week: str, current_sto
         weight = 1.25 if day_of_week in ["SATURDAY", "SUNDAY"] else 1.0
         final_predicted_consume = int(np.ceil(predicted_consume * weight))
         
-        # 🌟 [단위 버그 완전 격리] 자재 ID가 1번(원두), 4번(우유)일 때만 환산 계수를 1000으로 고정
+        # 자재 ID가 1번(원두), 4번(우유)일 때만 환산 계수를 1000으로 고정
         unit_factor = 1000 if ingredient_id in [1, 4] else 1
         
         # 원본 소모량(g, ml)을 자바 화면 규격(봉, 팩, 개) 단위로 올림 가공
