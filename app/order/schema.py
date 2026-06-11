@@ -13,3 +13,7 @@ class PredictionResponse(BaseModel):
     suggestedQty: int
     message: str
     code: str
+
+class TrainRequest(BaseModel):
+    ingredientId: int
+    rawAmounts: List[int]
