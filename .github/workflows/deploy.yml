@@ -1,0 +1,43 @@
+name: FastAPI Elastic Beanstalk Deploy  # [필수] GitHub Actions 이름 (가독성용)
+on:                                     # [필수] 언제 실행할지 정의
+  push:                                 # [필수] push 이벤트 기반 실행
+    branches: [ "deploy" ]               # [★수정 가능] 배포를 트리거할 브랜치명 (예: main, dev 등)
+jobs:                                   # [필수] 작업(Job) 집합 정의
+  build-and-deploy:                     # [필수] Job 이름
+    runs-on: ubuntu-latest              # [필수] 실행 OS (GitHub 제공 환경)
+    steps:                              # [필수] 단계별 작업 정의
+      # 1. Git Source Code Checkout
+      - name: Checkout source                   # [필수] 소스코드 가져오기
+        uses: actions/checkout@v4               # [필수] GitHub 공식 checkout 액션
+      # 2. Python 환경 설정 (테스트 및 빌드용)
+      - name: Set up Python                     # [필수] Python 환경 설정
+        uses: actions/setup-python@v5           # [필수] 파이썬 설정 액션
+        with:
+          python-version: '3.12'                # [★수정 가능] 프로젝트에서 사용하는 Python 버전으로 변경 (예: '3.10', '3.12')
+      # 3. 배포 패키지 생성 (Zip 압축)
+      - name: Generate deployment package       # [필수] EB Python 플랫폼용 배포 파일 생성
+        # [선택] 가상환경 폴더(.venv 등)나 Git 관련 파일이 압축에 포함되지 않도록 제외 처리
+        run: zip -r deploy.zip . -x "*.git*" "*__pycache__*" "*.venv*"
+        shell: bash                             # [필수] bash 쉘 사용
+      # 4. AWS 인증 설정
+      - name: Configure AWS Credentials         # [필수] AWS CLI 사용을 위한 자격증명 설정
+        uses: aws-actions/configure-aws-credentials@v4 # [필수] AWS 공식 인증 액션
+        with:
+          # 아래 두 Secret 값은 GitHub Repository -> Settings -> Secrets and variables -> Actions에 등록해야 합니다.
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}     # [필수] GitHub에 등록한 IAM Access Key ID
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # [필수] GitHub에 등록한 IAM Secret Access Key
+          aws-region: ap-northeast-2                              # [★수정 가능] 사용하는 AWS 리전 (서울이 아닐 경우 변경)
+      # 5. Elastic Beanstalk으로 압축 파일 업로드 및 배포
+      - name: Deploy to Elastic Beanstalk       # [필수] EB 환경에 애플리케이션을 배포하는 단계
+        uses: einaregilsson/beanstalk-deploy@v22 # [필수] EB 배포 전용 외부 액션 라이브러리
+        with:
+          # 위 4번 단계에서 설정한 AWS 인증 정보 및 리전을 그대로 연동합니다.
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ap-northeast-2                # [★수정 가능] 사용하는 AWS 리전 (4번과 일치 필수)
+          # [★필수 수정] AWS Elastic Beanstalk 콘솔에 생성한 명칭과 정확히 일치해야 합니다.
+          application_name: YOUR-EB-APP-NAME    # [★필수 수정] 생성한 Elastic Beanstalk '애플리케이션' 이름 입력
+          environment_name: YOUR-EB-ENV-NAME    # [★필수 수정] 생성한 Elastic Beanstalk '환경' 이름 입력
+          # 배포 버전 관리를 위한 라벨 지정 (GitHub 고유 커밋 해시값 활용)
+          version_label: fastapi-${{ github.sha }} 
+          deployment_package: deploy.zip        # [필수] 3번 단계에서 생성한 압축 파일명 지정
