@@ -36,8 +36,8 @@ jobs:                                   # [필수] 작업(Job) 집합 정의
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           region: ap-northeast-2                # [★수정 가능] 사용하는 AWS 리전 (4번과 일치 필수)
           # [★필수 수정] AWS Elastic Beanstalk 콘솔에 생성한 명칭과 정확히 일치해야 합니다.
-          application_name: YOUR-EB-APP-NAME    # [★필수 수정] 생성한 Elastic Beanstalk '애플리케이션' 이름 입력
-          environment_name: YOUR-EB-ENV-NAME    # [★필수 수정] 생성한 Elastic Beanstalk '환경' 이름 입력
+          application_name: cafe-ai-system    # [★필수 수정] 생성한 Elastic Beanstalk '애플리케이션' 이름 입력
+          environment_name: Cafe-ai-system-env    # [★필수 수정] 생성한 Elastic Beanstalk '환경' 이름 입력
           # 배포 버전 관리를 위한 라벨 지정 (GitHub 고유 커밋 해시값 활용)
           version_label: fastapi-${{ github.sha }} 
           deployment_package: deploy.zip        # [필수] 3번 단계에서 생성한 압축 파일명 지정
